@@ -1,29 +1,39 @@
 from bs4 import BeautifulSoup
 import requests
-import bs4
+import pandas as pd
+from io import StringIO
 
-page_to_be_scraped = 'https://www.gov.uk/income-tax-rates'
+url = 'https://www.gov.uk/income-tax-rates'
+response = requests.get(url)
 
-data = requests.get(page_to_be_scraped)
+soup = BeautifulSoup(response.content, "html.parser")
+table = soup.find_all("table")[0]
 
-soup = BeautifulSoup(data.content, 'html.parser')
+df = pd.read_html(StringIO(str(table)))[0]
 
-s = soup.find('div', class_='gem-c-govspeak govuk-govspeak gem-c-govspeak--direction-ltr js-disable-youtube govuk-!-margin-bottom-0')
-content = soup.find_all('table')
-table = soup.find_all('table')[0]
-rows = soup.find_all('td')
-rows2 = soup.find_all('th')
-#print(content)
+print('a')
+print(df)
+
+df['tax_rate2'] = ((df['Tax rate'].str.replace('%','')).astype(float)) * 0.01
 print('')
-print('')
-print(table)
-print('')
-print(rows[0])
-print('')
-print(rows)
-print('')
-print(rows2)
-'''
-for i in range(0,len(rows2)-1):
-    print(f'{i} = {rows2[i]}')
-'''
+print(df)
+
+
+
+'''df['tax_rate2'] = df['Tax rate']
+for i in ['%','0']:
+    df['tax_rate2'] = (df['tax_rate2'].str.replace(i,''))
+    #print(df)
+df['tax_rate2'].astype(float) * 0.01'''
+
+# Need to come up with a way to split taxable income values 
+
+df['A'] = df['Taxable income'].str.split(' to ')
+
+df['B'] = df['Taxable income'].str.split(' ')
+# Need to remove £ before creating upper and lower bands 
+df['C'] =  df['B'].str[0]
+df['D'] =  df['B'].str[-1]
+print(df)
+# Need to come up with a way to split taxable income values 
+
