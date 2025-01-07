@@ -20,20 +20,34 @@ print(df)
 
 
 
-'''df['tax_rate2'] = df['Tax rate']
-for i in ['%','0']:
-    df['tax_rate2'] = (df['tax_rate2'].str.replace(i,''))
-    #print(df)
-df['tax_rate2'].astype(float) * 0.01'''
-
 # Need to come up with a way to split taxable income values 
+# Need to rewrite this:
 
-df['A'] = df['Taxable income'].str.split(' to ')
 
-df['B'] = df['Taxable income'].str.split(' ')
 # Need to remove £ before creating upper and lower bands 
-df['C'] =  df['B'].str[0]
-df['D'] =  df['B'].str[-1]
-print(df)
-# Need to come up with a way to split taxable income values 
+df['lower_limit'] = (df['Taxable income'].str.split(' ')).str[0]
+df['upper_limit'] = (df['Taxable income'].str.split(' ')).str[-1]
 
+# Removing £ and , from data
+for i in ['£',',']:
+    df['lower_limit'] = (df['lower_limit'].str.replace(i,''))
+    df['upper_limit'] = (df['upper_limit'].str.replace(i,''))
+
+df['lower_limit'] = (df['lower_limit'].str.replace('Up','0'))
+df['lower_limit'] = (df['lower_limit'].str.replace('over','9999999999'))
+
+df['lower_limit'] = df['lower_limit'].astype(int)
+df['upper_limit'] = df['upper_limit'].astype(int)
+print(df)
+print('')
+for i in range(0,len(df)):
+
+    lower_limit = df.iloc[i,4]
+    upper_limit = df.iloc[i,5]
+
+    if lower_limit > upper_limit:
+        df.iloc[i,4] = upper_limit
+        df.iloc[i,5] = lower_limit
+
+
+print(df)
