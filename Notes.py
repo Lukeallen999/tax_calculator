@@ -52,6 +52,7 @@ Website: https://www.gov.uk/repaying-your-student-loan/what-you-pay
     C) ask if they make any voluntary contribution 
 
 - Add option to pick between average monthly,yearly,weekly salary
+- Add option that if the over/up to words break the user can input their own value
 Possible breaks:
 - If the Urls change
 - If the names of the columns change
@@ -59,31 +60,5 @@ Possible breaks:
 
 Why I made this:
 I mainly made this to practice Webscraping 
-#######################################################################
-
-from bs4 import BeautifulSoup
-import requests
-import pandas as pd
-from io import StringIO
-
-try:
-   url = 'https://www.gov.uk/income-tax-rates'
-   response = requests.get(url)
-   response.raise_for_status()
-
-except requests.exceptions.RequestException as e:
-   print(f"Error fetching the webpage: {e}")
-
-try:
-   soup = BeautifulSoup(response.content, "html.parser")
-
-   table = soup.find_all("table")[0]
-
-   df = pd.read_html(StringIO(str(table)))[0]
-
-except Exception as e:
-   print(f"Error parsing the HTML or reading the table: {e}")
-
-print(df)
 '''
 
